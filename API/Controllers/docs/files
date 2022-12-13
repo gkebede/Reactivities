@@ -1,0 +1,24 @@
+1--dotnet new list   ---to see all .net projects
+2--
+
+ENTITY FRAME WORK
+
+EF ===> Entity frame work comands
+
+--dotnet ef to get list of comands
+
+--microsoft.entityframework.sqlserver
+--Microsoft.EntityFrameworkCore.Design
+
+
+--dotnet tool install --global dotnet-ef --version 7.0.0
+--dotnet ef migrartions add InitialCreate -s API -p Persistence
+
+connection issues solution for .net core 7 and up
+--https://stackoverflow.com/questions/17615260/the-certificate-chain-was-issued-by-an-authority-that-is-not-trusted-when-conn
+
+
+GIT
+
+--git init  - to create git to your project
+--dotnet new gitignore   -- to create ignore file in your project
