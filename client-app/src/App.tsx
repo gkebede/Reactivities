@@ -1,8 +1,7 @@
 import { useEffect,useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
-import { Button, Header, List } from 'semantic-ui-react';
+import { Header, List } from 'semantic-ui-react';
 
  
 
@@ -42,16 +41,12 @@ function App() {
 
          {activities.map((activity : any) => {
 
-return <List.Item key={activity.id}>{activity.title}</List.Item>
+                return <List.Item key={activity.id}>{activity.title}</List.Item>
 
            })}
 
          </List>
-         <ul>
-      
-         </ul>
 
-      
     </div>
   );
 }
