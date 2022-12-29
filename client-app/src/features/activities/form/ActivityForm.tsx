@@ -7,7 +7,8 @@ export interface Props {
 
     activity: Activity | undefined,
     closeForm: () => void,
-    createOrEdit: (activity: Activity) => void
+    createOrEdit: (activity: Activity) => void,
+    submitting : boolean,
   
 }
 
@@ -15,7 +16,8 @@ export interface Props {
 
 // can give any randem name for the varible that we passing down as a Props
 
-export default function ActivityForm({ activity : selectedActivity, closeForm, createOrEdit  }: Props) {
+export default function ActivityForm({ activity : selectedActivity, closeForm,
+     createOrEdit, submitting }: Props) {
 
     const initialState = selectedActivity ?? {
 
@@ -78,7 +80,7 @@ export default function ActivityForm({ activity : selectedActivity, closeForm, c
                     />
 
                     <Form.Input placeholder={activity.date} 
-                     value={activity.date} name='date'
+                     value={activity.date} name='date' type='date'
                      onChange={handleInputChange} 
                      />
 
@@ -93,7 +95,7 @@ export default function ActivityForm({ activity : selectedActivity, closeForm, c
                      />
 
 
-                    <Button content='Submit' type='submit' floated='right' positive/>
+                    <Button loading= {submitting} content='Submit' type='submit' floated='right' positive/>
                     <Button floated='right' content='Cancel' type='button' onClick={closeForm} />
 
 

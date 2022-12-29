@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useState } from 'react';
-import axios from 'axios';
 import { Container } from 'semantic-ui-react';
 import {v4 as uuid} from 'uuid'
 
@@ -9,6 +8,8 @@ import '../layout/styles.css';
 import ActivityDashboard from '../../features/activities/dashboard/ActivitiesDashboard';
 import  {Activity}  from '../models/activity';
 import NavBar from './NavBar';
+import agent from '../api/agent';
+import LoadingComponent from './LoadingComponent';
  
 
 
@@ -23,19 +24,22 @@ function App() {
                                                  undefined>(undefined);
 
   const [editMode,  setEditMode] = useState(false);                                                
+  const [loading,  setLoading] = useState(false);                                                
+  const [submitting,  setSubmitting] = useState(false);                                                
  
 
 
   // useEffect  -> LOOP INDEFNATLY loop IF WE DON'T GIVE SOME KIND OF DEPENDENCY
   // 1   =========  activities   initialization
   useEffect(() => {
-    axios.get<Activity[]>('http://localhost:5000/activities'
-    )
-      .then((response) => {   // console.log(response)
+    agent.Activities.list().then((response) => {   // console.log(response)
        
-        setActivities(response.data);
+        setActivities(response);
+          setLoading(false)
       })
   }, []);
+
+
 
 
     // 2   =========  activity   initialization
@@ -50,9 +54,12 @@ function App() {
       setSelectedActivity(undefined);
     }
 
-   const handelformOpen  = (id?: string) => {
 
-    console.log('clickded')
+
+
+    function handelformOpen(id?: string)  {
+
+    //console.log('clickded')
 
   id ? handelSelectActivity(id) : handleCancelselectActivity();
 
@@ -61,41 +68,87 @@ function App() {
   }
 
 
+
+
   function handelformClose() {
 
     setEditMode(false);
   
     }
 
+
+
     function handleCreateOrEditActivity(activity: Activity) {
 
-       activity.id
-        ? setActivities([...activities.filter( x=> x.id !== activity.id), activity])
-        :setActivities([...activities, {...activity, id: uuid()}]);
-        setEditMode(false);
-        setSelectedActivity(activity);
+      setSubmitting(true);
+
+      if(activity.id){
+
+        agent.Activities.update( activity).then( () => {
+          setActivities([...activities.filter( x=> x.id !== activity.id), activity])
+          setSelectedActivity(activity);
+          setEditMode(false);
+          setSubmitting(false);
+        } )
+
+      }else{
+
+        activity.id = uuid();
+        agent.Activities.create(activity).then( () => {
+
+          setActivities([...activities, activity]);
+          setSelectedActivity(activity);
+          setEditMode(false);
+          setSubmitting(false);
+
+        })
+
+      }
 
     }
 
+
+
+
     function handleDeletetActivity(id: string) {
 
-      
-       setActivities([...activities.filter( x=> x.id !== id)])
-       
+      setSubmitting(true);
 
+      agent.Activities.delete(id).then( () => {
+
+        setActivities([...activities.filter( x=> x.id !== id)])
+
+
+      });
+
+      setSubmitting(false);
+      
    }
 
+// THIS IS LINE IS NOT WORKING
 
+
+  if(loading)   {
+
+  setLoading(true)
+ return <LoadingComponent content='Loading app' />
+}
+
+ 
 
 
   return (
+    
     <Fragment>
 
-      <NavBar  openForm= {handelformOpen} />
+
+
+      <NavBar  openForm= {handelformOpen} /> 
 
       <Container style={{ marginTop: '7em' }}>
 
         <ActivityDashboard 
+        submitting ={submitting}
         activities={activities}
         selectedActivity={ selectedActivity }
         selectActivity ={ handelSelectActivity}
@@ -104,7 +157,6 @@ function App() {
         closeForm = { handelformClose}
         createOrEdit ={handleCreateOrEditActivity}
         deletetActivity ={handleDeletetActivity}
-
         editMode = {editMode}
          />
 
@@ -113,6 +165,8 @@ function App() {
     </Fragment>
   );
 }
+
+
 
 export default App;
 
