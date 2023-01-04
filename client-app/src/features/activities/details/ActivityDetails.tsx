@@ -1,18 +1,19 @@
 import React from "react";
 import { Button, Card, Grid, Image } from "semantic-ui-react";
-import { Activity } from "../../../app/models/activity";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
+import { useStore } from "../../../app/stores/store";
 
-export interface Props {
+ 
 
-  activity: Activity,
-  cancelSelectActivity: () => void,
-  openForm: (id: string) => void,
+export default function ActivityDetails() {
 
 
-}
+    
+  const {activityStore} = useStore();
 
-export default function ActivityDetails({ activity,
-  cancelSelectActivity, openForm}: Props) {
+  const {selectedActivity: activity, openForm, cancelSelectActivity} = activityStore;
+
+  if(!activity) return < LoadingComponent content={""} />;
 
   return (
 

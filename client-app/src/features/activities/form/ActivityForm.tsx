@@ -1,23 +1,21 @@
+import { act } from '@testing-library/react';
+import { observer } from 'mobx-react-lite';
 import React, { ChangeEvent, useState } from 'react';
 import { Button, Form, Segment } from 'semantic-ui-react';
 import NavBar from '../../../app/layout/NavBar';
 import { Activity } from '../../../app/models/activity';
+import { useStore } from '../../../app/stores/store';
 
-export interface Props {
-
-    activity: Activity | undefined,
-    closeForm: () => void,
-    createOrEdit: (activity: Activity) => void,
-    submitting : boolean,
-  
-}
+ 
 
 // if u want give identical name for a variable on a given page u 
 
 // can give any randem name for the varible that we passing down as a Props
 
-export default function ActivityForm({ activity : selectedActivity, closeForm,
-     createOrEdit, submitting }: Props) {
+export default observer( function ActivityForm() {
+
+    const {activityStore} = useStore();
+    const {selectedActivity, closeForm, createActivity, updateActivity, loading } = activityStore;
 
     const initialState = selectedActivity ?? {
 
@@ -49,9 +47,8 @@ export default function ActivityForm({ activity : selectedActivity, closeForm,
 
     function handelsubmit() {
 
-        console.log(activity);
-
-        createOrEdit(activity);
+        activity.id ? updateActivity(activity) : createActivity(activity);
+    
     }
 
 
@@ -95,7 +92,7 @@ export default function ActivityForm({ activity : selectedActivity, closeForm,
                      />
 
 
-                    <Button loading= {submitting} content='Submit' type='submit' floated='right' positive/>
+                    <Button loading = { loading } content='Submit' type='submit' floated='right' positive/>
                     <Button floated='right' content='Cancel' type='button' onClick={closeForm} />
 
 
@@ -109,4 +106,4 @@ export default function ActivityForm({ activity : selectedActivity, closeForm,
 
 
 
-}
+} )

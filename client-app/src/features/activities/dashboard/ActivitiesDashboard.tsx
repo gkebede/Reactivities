@@ -1,87 +1,55 @@
 import React from "react";
 import { Grid, List, Segment } from "semantic-ui-react";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { Activity } from "../../../app/models/activity";
+import { useStore } from "../../../app/stores/store";
 import ActivityDetails from "../details/ActivityDetails";
 import ActivityForm from "../form/ActivityForm";
 import ActivityList from "./ActivityList";
 
-export interface Props {
-
-    activities: Activity[],
-    selectedActivity: Activity | undefined,
-    selectActivity: (id: string) => void,
-    cancelSelectActivity: () => void,
-
-    editMode: boolean
-    openForm: (id?: string) => void,
-    closeForm: () => void,
-
-    createOrEdit: (activity: Activity) => void,
-    deletetActivity: (id: string) => void,
-
-    submitting : boolean
-     
-
-}
+import { observer } from 'mobx-react-lite';
 
 
 
-export default function ActivityDashboard({
-    activities, selectedActivity, selectActivity, cancelSelectActivity,
-    editMode, openForm, closeForm, createOrEdit, deletetActivity, submitting
-}: Props) {
+
+
+export default observer( function ActivityDashboard() {
+
+   // const activity =  activities[0];
+
+    const {activityStore} = useStore()
 
     return (
 
-
+        
         <Grid>
             <Grid.Column width='10'>
-                <ActivityList
-                
-                    selectActivity={selectActivity}
-                    activities={activities}
-                    selectedActivity={selectedActivity}
-                    deletetActivity = { deletetActivity }
-                    submitting = {submitting}
-
-
-                />
+                <ActivityList />
             </Grid.Column>
 
 
             <Grid.Column width='6'>
                 {
-                    activities.map((activity: Activity) => (
+                   
+                    //activities.map((activity: Activity) => (
 
-                        activity && selectedActivity &&  // if activity & selectedActivity is exist or not null
-                        <Segment key={activity.id} >
+                        activityStore.selectedActivity &&  // if activity & selectedActivity is exist or not null
+                        <Segment  >
                             {
-                                  !editMode &&
-
-                                <ActivityDetails
-
-                                    activity={selectedActivity}
-
-                                    cancelSelectActivity={cancelSelectActivity}
-                                    openForm={openForm}
-
-                                />
+                                activityStore.selectedActivity &&  !activityStore.editMode &&
+                                <ActivityDetails />
                             }
 
                             {
-                                
-                                editMode &&
-                                <ActivityForm 
-                                closeForm={closeForm} createOrEdit = {createOrEdit}
-                                              activity={activity }  submitting = {submitting}
-
-                                              />
-
+                                activityStore.editMode &&
+                                <ActivityForm />
                             }
 
                         </Segment>
 
-                    ))}
+                   // )
+                   // )
+                }
 
             </Grid.Column>
 
@@ -91,4 +59,4 @@ export default function ActivityDashboard({
 
     )
 
-}
+})

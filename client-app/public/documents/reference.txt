@@ -1,0 +1,415 @@
+1-------app 
+------
+import { Fragment, useEffect, useState } from 'react';
+import { Button, Container } from 'semantic-ui-react';
+import {v4 as uuid} from 'uuid'
+
+//import NavBar from './NavBar';
+
+import '../layout/styles.css';
+import ActivityDashboard from '../../features/activities/dashboard/ActivitiesDashboard';
+import  {Activity}  from '../models/activity';
+import NavBar from './NavBar';
+import agent from '../api/agent';
+import LoadingComponent from './LoadingComponent';
+import { useStore } from '../stores/store';
+import { observer } from 'mobx-react-lite';
+
+
+ 
+
+
+function App() {
+
+let {activityStore} = useStore()
+
+
+  const [activities, setActivities] = useState<Activity[]>([]);
+
+  const [selectedActivity, setSelectedActivity] = useState<Activity |
+                                                 undefined>(undefined);
+
+  const [editMode,  setEditMode] = useState(false);                                                
+  const [loading,  setLoading] = useState(false);                                                
+  const [submitting,  setSubmitting] = useState(false);                                                
+ 
+
+
+  // useEffect  -> LOOP INDEFNATLY loop IF WE DON'T GIVE SOME KIND OF DEPENDENCY
+  // 1   =========  activities   initialization
+  useEffect(() => {
+    agent.Activities.list().then((response) => {   // console.log(response)
+       
+        setActivities(response);
+          setLoading(false)
+      })
+  }, []);
+
+
+
+
+    // 2   =========  activity   initialization
+    function handelSelectActivity (id: string)  {
+
+      setSelectedActivity(activities.find(activity => activity.id === id))
+    }
+
+  // 3   =========  activity   canceling selected activity
+    function handleCancelselectActivity ()  {
+  
+      setSelectedActivity(undefined);
+    }
+
+
+
+
+    function handelformOpen(id?: string)  {
+
+    //console.log('clickded')
+
+  id ? handelSelectActivity(id) : handleCancelselectActivity();
+
+  setEditMode(true);
+
+  }
+
+
+
+
+  function handelformClose() {
+
+    setEditMode(false);
+  
+    }
+
+
+
+    function handleCreateOrEditActivity(activity: Activity) {
+
+      setSubmitting(true);
+
+      if(activity.id){
+
+        agent.Activities.update( activity).then( () => {
+          setActivities([...activities.filter( x=> x.id !== activity.id), activity])
+          setSelectedActivity(activity);
+          setEditMode(false);
+          setSubmitting(false);
+        } )
+
+      }else{
+
+        activity.id = uuid();
+        agent.Activities.create(activity).then( () => {
+
+          setActivities([...activities, activity]);
+          setSelectedActivity(activity);
+          setEditMode(false);
+          setSubmitting(false);
+
+        })
+
+      }
+
+    }
+
+
+
+
+    function handleDeletetActivity(id: string) {
+
+      setSubmitting(true);
+
+      agent.Activities.delete(id).then( () => {
+
+        setActivities([...activities.filter( x=> x.id !== id)])
+
+
+      });
+
+      setSubmitting(false);
+      
+   }
+
+// THIS IS LINE IS NOT WORKING
+
+
+
+if(loading)   {
+
+  setLoading(true)
+ return <LoadingComponent content='Loading app' />
+}
+ 
+
+
+  return (
+
+    
+    
+    <Fragment>
+
+
+
+      <NavBar  openForm= {handelformOpen} /> 
+
+      <Container style={{ marginTop: '7em' }}>
+
+        <h1>{activityStore.titel}</h1>
+
+        <Button positive content='add exclamatin' onClick={activityStore.setTitle} />
+
+        <ActivityDashboard 
+        submitting ={submitting}
+        activities={activities}
+        selectedActivity={ selectedActivity }
+        selectActivity ={ handelSelectActivity}
+        cancelSelectActivity={handleCancelselectActivity}
+        openForm ={ handelformOpen }
+        closeForm = { handelformClose}
+        createOrEdit ={handleCreateOrEditActivity}
+        deletetActivity ={handleDeletetActivity}
+        editMode = {editMode}
+         />
+
+      </Container>
+
+    </Fragment>
+  );
+}
+
+
+
+export default observer(App);
+
+// App -> ActivityDashboard -> ActivityList  -> ActivityDetails
+==========================================================================
+
+2----ActivityDashboard
+
+import React from "react";
+import { Grid, List, Segment } from "semantic-ui-react";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
+import { Activity } from "../../../app/models/activity";
+import ActivityDetails from "../details/ActivityDetails";
+import ActivityForm from "../form/ActivityForm";
+import ActivityList from "./ActivityList";
+
+export interface Props {
+
+    activities: Activity[],
+    selectedActivity: Activity | undefined,
+    selectActivity: (id: string) => void,
+    cancelSelectActivity: () => void,
+
+    editMode: boolean
+    openForm: (id?: string) => void,
+    closeForm: () => void,
+
+    createOrEdit: (activity: Activity) => void,
+    deletetActivity: (id: string) => void,
+    submitting : boolean,
+
+
+}
+
+
+
+export default function ActivityDashboard({
+    activities, selectedActivity, selectActivity, cancelSelectActivity,
+    editMode, openForm, closeForm, createOrEdit, deletetActivity, submitting
+}: Props) {
+
+
+
+
+    return (
+
+
+        <Grid>
+            <Grid.Column width='10'>
+                <ActivityList
+                
+                    selectActivity={selectActivity}
+                    activities={activities}
+                    selectedActivity={selectedActivity}
+                    deletetActivity = { deletetActivity }
+                    submitting = {submitting}
+
+
+                />
+            </Grid.Column>
+
+
+            <Grid.Column width='6'>
+                {
+                    activities.map((activity: Activity) => (
+
+                        activity && selectedActivity &&  // if activity & selectedActivity is exist or not null
+                        <Segment key={activity.id} >
+                            {
+                                  !editMode &&
+
+                                <ActivityDetails
+
+                                    activity={selectedActivity}
+
+                                    cancelSelectActivity={cancelSelectActivity}
+                                    openForm={openForm}
+
+                                />
+                            }
+
+                            {
+                                
+                                editMode &&
+                                <ActivityForm 
+                                closeForm={closeForm} createOrEdit = {createOrEdit}
+                                              activity={activity }  submitting = {submitting}
+
+                                              />
+
+                            }
+
+                        </Segment>
+
+                    ))}
+
+            </Grid.Column>
+
+
+        </Grid>
+
+
+    )
+
+}
+===============================================================
+
+3----ActivityList
+
+
+import React, { HtmlHTMLAttributes, SyntheticEvent, useState, useContext } from "react";
+import { Button, Item, Label, Segment } from "semantic-ui-react";
+import { Activity } from "../../../app/models/activity";
+
+
+
+interface Props {
+
+    activities: Activity[],
+    selectedActivity: Activity | undefined,
+    selectActivity: (id: string) => void,
+    deletetActivity: (id: string) => void,
+    submitting : boolean
+}
+
+
+export default function ActivityList({ activities, selectActivity, deletetActivity,
+     submitting}: Props) {
+
+        const [target, setTarget] = useState('');
+
+        function handleActivityDelete (e: SyntheticEvent<HTMLButtonElement>, id: string) {
+
+            setTarget(e.currentTarget.name);
+            deletetActivity(id);
+
+
+        }
+
+
+    return (
+
+
+        <Segment>
+            <Item.Group divided >
+                {activities.map((activity: Activity) => (
+
+                    <Item key={activity.id}>
+                        <Item.Content>
+                            <Item.Header>{ activity.title }</Item.Header>
+                            <Item.Meta>{activity.date}</Item.Meta>
+                            <Item.Description>
+                                <div>{activity.description}</div>
+                                <div>{activity.city}, {activity.venue}</div>
+                            </Item.Description>
+                            <Item.Extra>
+                            <Button 
+                            name = {activity.id}
+                            loading = {submitting && target === activity.id} 
+                            floated="right"
+                             content="Delete" 
+                             color="red"
+                             onClick={(e) => handleActivityDelete(e, activity.id)} />
+
+                                <Button 
+                                floated="right"
+                                 content="View" color="blue"
+                                    onClick={() => selectActivity(activity.id)} />
+                               
+                                <Label basic content={activity.category} color='teal' />
+                            </Item.Extra>
+                        </Item.Content>
+                    </Item>
+                ))}
+            </Item.Group>
+        </Segment>
+    )
+
+
+}
+========================================================
+
+4---ActivityDetails
+
+
+
+import React from "react";
+import { Button, Card, Grid, Image } from "semantic-ui-react";
+import { Activity } from "../../../app/models/activity";
+
+export interface Props {
+
+  activity: Activity,
+  cancelSelectActivity: () => void,
+  openForm: (id: string) => void,
+
+
+}
+
+export default function ActivityDetails({ activity,
+  cancelSelectActivity, openForm}: Props) {
+
+  return (
+
+    <Card fluid>
+      <Image src={`assets/categoryImages/${activity.category}.jpg`} />
+      <Card.Content>
+        <Card.Header>{activity.title}</Card.Header>
+        <Card.Meta>
+          <span className='date'>{activity.date}</span>
+        </Card.Meta>
+        <Card.Description>
+          {activity.description}
+        </Card.Description>
+      </Card.Content>
+      <Card.Content extra>
+
+        <Button.Group>
+
+          <Button content='Edit' floated="right" color="green" 
+          onClick={() => openForm(activity.id)}
+          />
+          <Button
+            color="red" content='Cancel' floated="right"
+            onClick={cancelSelectActivity}
+          />
+
+        </Button.Group>
+      </Card.Content>
+    </Card>
+
+  )
+
+}
