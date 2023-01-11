@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { HtmlHTMLAttributes, SyntheticEvent, useState, useContext } from "react";
+import { NavLink } from "react-router-dom";
 import { Button, Item, Label, Segment } from "semantic-ui-react";
 import { Activity } from "../../../app/models/activity";
 import { useStore } from "../../../app/stores/store";
@@ -15,6 +16,7 @@ export default observer(function ActivityList() {
 
     const { activityStore } = useStore();
 
+    //const {deleteActivity,loading, activitiesByDate} = activityStore;
     const {deleteActivity,loading, activitiesByDate} = activityStore;
 
     function handleActivityDelete(e: SyntheticEvent<HTMLButtonElement>, id: string) {
@@ -31,8 +33,9 @@ export default observer(function ActivityList() {
 
         <Segment>
             <Item.Group divided >
-                {activitiesByDate.map((activity: Activity) => (
 
+                {activitiesByDate.map((activity: Activity) => (
+                                            //{(Array.from(activityRegistry.values())).map((activity: Activity) => ( 
                     <Item key={activity.id}>
                         <Item.Content>
                             <Item.Header>{activity.title}</Item.Header>
@@ -50,10 +53,11 @@ export default observer(function ActivityList() {
                                     color="red"
                                     onClick={(e) => handleActivityDelete(e, activity.id)} />
 
-                                <Button
+                                
+                                    <Button
                                     floated="right"
                                     content="View" color="blue"
-                                    onClick={() => activityStore.selectActivity(activity.id)} />
+                                    as= { NavLink } to={`/activities/${activity.id}`} /> 
 
                                 <Label basic content={activity.category} color='teal' />
                             </Item.Extra>

@@ -1,11 +1,9 @@
-import { act } from '@testing-library/react';
 import { observer } from 'mobx-react-lite';
 import React, { ChangeEvent, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button, Form, Segment } from 'semantic-ui-react';
-import NavBar from '../../../app/layout/NavBar';
-import { Activity } from '../../../app/models/activity';
 import { useStore } from '../../../app/stores/store';
-
+import {v4 as uuid}  from 'uuid';
  
 
 // if u want give identical name for a variable on a given page u 
@@ -15,7 +13,8 @@ import { useStore } from '../../../app/stores/store';
 export default observer( function ActivityForm() {
 
     const {activityStore} = useStore();
-    const {selectedActivity, closeForm, createActivity, updateActivity, loading } = activityStore;
+    const {selectedActivity, createActivity, updateActivity, loading } = activityStore;
+    const navigate = useNavigate();
 
     const initialState = selectedActivity ?? {
 
@@ -41,14 +40,20 @@ export default observer( function ActivityForm() {
         setActivity({...activity, [name] : value})
 
         console.log(event);
-
-
     }
 
     function handelsubmit() {
 
-        activity.id ? updateActivity(activity) : createActivity(activity);
-    
+        if(!activity.id){
+            activity.id = uuid();
+            createActivity(activity).then( () => {
+                navigate(`/activities/${activity.id}`)
+            });
+        }else {
+            updateActivity(activity).then( () => {
+                navigate(`/activities/${activity.id}`)
+            })
+        }
     }
 
 
@@ -57,7 +62,7 @@ export default observer( function ActivityForm() {
 
         <Segment clearing>
           
-             {   activity &&
+             {   activity && 
              
              <Form onSubmit={handelsubmit} autoComplete='off' >
                 
@@ -93,11 +98,10 @@ export default observer( function ActivityForm() {
 
 
                     <Button loading = { loading } content='Submit' type='submit' floated='right' positive/>
-                    <Button floated='right' content='Cancel' type='button' onClick={closeForm} />
+                    <Button floated='right' content='Cancel' type='button' as={Link} to= {'/activities'} />
 
 
                 </Form>}
-         
 
         </Segment>
 

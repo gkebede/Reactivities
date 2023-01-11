@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
-import App from './app/layout/App';
+import { router } from './app/api/router/Routes';
 import './app/layout/styles.css';
 //import { StoreContext, store } from './app/stores/store';
 import { StoreContext, store } from './app/stores/store';
@@ -15,9 +16,11 @@ root.render(
   // on the conole due to semantic ui doesn't work with stric mode.
   // <React.StrictMode>
 
+  
   <StoreContext.Provider value={store}>
-    <App />
+    <RouterProvider router={router} /> 
   </StoreContext.Provider>
+ 
 
 
   // </React.StrictMode>

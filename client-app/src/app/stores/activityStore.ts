@@ -1,23 +1,24 @@
-import { makeAutoObservable, runInAction} from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../api/agent";
 import { Activity } from "../models/activity";
 import { v4 as uuid } from 'uuid';
 
 export class ActivityStore {
 
-   // activities: Activity[] = [];  === get activitiesByDate()
-    activityRegistry = new Map<string, Activity> ();
-    selectedActivity : Activity | undefined = undefined;
+    // activities: Activity[] = [];  === get activitiesByDate()
+    activityRegistry = new Map<string, Activity>();
+    selectedActivity: Activity | undefined = undefined;
 
     //defending mecanisms 
-    editMode = false;                                                
-    loading  = false;  
-    loadingInitial  = false;  
-    
+    editMode = false;
+    loading = false;
+    loadingInitial = false;
+
 
 
     constructor() {
-        
+
+
         makeAutoObservable(this)
     }
 
@@ -25,37 +26,25 @@ export class ActivityStore {
 
         return Array.from(this.activityRegistry.values()).sort((a, b) => {
 
-         return  Date.parse(a.date) - Date.parse(b.date)
+            return Date.parse(a.date) - Date.parse(b.date)
 
         })
     }
 
-      // 1   =========  activities   initialization
+    // 1   =========  activities   initialization
     loadingActivites = async () => {
 
         this.setloadingInitial(true);
-        
-        try {
 
+        try {
             const activities = await agent.Activities.list();
 
             runInAction(() => {
-                activities.forEach( (activity) => {
-
-                    activity.date = activity.date.split('T')[0]
-
-                  //  this.activities.push(activity);
-    
-                    this.activityRegistry.set(activity.id, activity);
-                 })
-    
-              
-    
-                 this.setloadingInitial(false);
-              })
-
-         
-            
+                activities.forEach((activity) => {
+                    this.setActivity(activity);
+                })
+                this.setloadingInitial(false);
+            })
         } catch (error) {
 
             console.log(error)
@@ -63,39 +52,47 @@ export class ActivityStore {
         }
     }
 
-    // 2   =========  activity   initialization
-    selectActivity = async (id: string) => {
+    loadActivity = async (id: string) => {
 
-           // this.selectedActivity = this.activities.find( a => a.id === id);
-            this.activityRegistry.get(id);
-            
-            //    runInAction(() => this.loadingInitial  = false; 
+        let activity = this.getActivity(id);
 
-            this.setloadingInitial(false);
-         
+        if (activity) {
+            this.selectedActivity = activity;
+        }
+        else {
+            this.setloadingInitial(true);
+
+            try {
+                activity = await agent.Activities.details(id);
+            //    this.activityRegistry.set(activity.id, activity);
+                this.setActivity(activity);
+
+                this.selectedActivity = activity;
+                this.setloadingInitial(false);
+
+            } catch (error) {
+                console.log(error);
+                this.setloadingInitial(false);
+            }
+        }
     }
 
-// 3   =========  activity   canceling selected activity
-    cancelSelectActivity = () => {
 
-        this.selectedActivity = undefined;
+    private setActivity = (activity: Activity) => {
+
+        activity.date = activity.date.split('T')[0]
+        //  this.activities.push(activity);
+       
+        this.activityRegistry.set(activity.id, activity);
     }
 
-    // THIS CODE DOESN'T WORK YET FOR navbar to open create open form
-    openForm = (id?: string) => {
+    private getActivity = (id: string) => {
 
-        id? this.selectActivity(id) : this.cancelSelectActivity();
-     
-        this.editMode = true;
+      
 
+        return this.activityRegistry.get(id);
     }
 
-
-
-
-    closeForm =  () => {
-        this.editMode = false;
-    }
 
 
     setloadingInitial = (state: boolean) => {
@@ -103,57 +100,57 @@ export class ActivityStore {
         this.loadingInitial = state;
     }
 
-    createActivity = async ( activity : Activity) => {
+    createActivity = async (activity: Activity) => {
 
         this.loading = true;
-        activity.id  = uuid();
+        activity.id = uuid();
 
         try {
-            
+
             await agent.Activities.create(activity);
-            runInAction( () => {
+            runInAction(() => {
                 //this.activities.push(activity)
                 this.activityRegistry.set(activity.id, activity);
                 this.selectedActivity = activity;
-                this.editMode =false;
+                this.editMode = false;
                 this.loading = false;
             })
-           
+
         } catch (error) {
 
             console.log(error);
-            runInAction( () => {
+            runInAction(() => {
 
                 this.loading = false;
             });
-            
+
         }
     }
 
-    updateActivity = async ( activity : Activity) => {
+    updateActivity = async (activity: Activity) => {
 
         this.loading = true;
         //activity.id  = uuid();
 
         try {
-            
+
             await agent.Activities.update(activity);
-            runInAction( () => {
-               //this.activities = [...this.activities.filter(a => a.id !== activity.id), activity];
-               this.activityRegistry.set(activity.id, activity);
-               this.selectedActivity = activity;
-                this.editMode =false;
+            runInAction(() => {
+                //this.activities = [...this.activities.filter(a => a.id !== activity.id), activity];
+                this.activityRegistry.set(activity.id, activity);
+                this.selectedActivity = activity;
+                this.editMode = false;
                 this.loading = false;
             })
-           
+
         } catch (error) {
 
             console.log(error);
-            runInAction( () => {
+            runInAction(() => {
 
                 this.loading = false;
             });
-            
+
         }
     }
 
@@ -162,29 +159,28 @@ export class ActivityStore {
         this.loading = true;
 
         try {
-            
+
             await agent.Activities.delete(id);
-            runInAction( () => {
-               //this.activities = [...this.activities.filter(a => a.id !==  id)];
-               this.activityRegistry.delete(id);
-            if (this.selectedActivity?.id === id) this.cancelSelectActivity();
+            runInAction(() => {
+                //this.activities = [...this.activities.filter(a => a.id !==  id)];
+                this.activityRegistry.delete(id);
                 this.loading = false;
             })
-           
+
         } catch (error) {
 
             console.log(error);
-            runInAction( () => {
+            runInAction(() => {
 
                 this.loading = false;
             });
-            
+
         }
 
 
     }
 
 
-  
+
 }
 

@@ -1,10 +1,7 @@
-import React from "react";
-import { Grid, List, Segment } from "semantic-ui-react";
+import { useEffect } from "react";
+import { Grid } from "semantic-ui-react";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
-import { Activity } from "../../../app/models/activity";
 import { useStore } from "../../../app/stores/store";
-import ActivityDetails from "../details/ActivityDetails";
-import ActivityForm from "../form/ActivityForm";
 import ActivityList from "./ActivityList";
 
 import { observer } from 'mobx-react-lite';
@@ -15,9 +12,32 @@ import { observer } from 'mobx-react-lite';
 
 export default observer( function ActivityDashboard() {
 
-   // const activity =  activities[0];
 
-    const {activityStore} = useStore()
+  
+
+    const {activityStore} = useStore();
+    const { loadingActivites, activityRegistry} = activityStore;
+    // useEffect  -> LOOP INDEFNATLY loop IF WE DON'T GIVE SOME KIND OF DEPENDENCY
+  
+    useEffect(() => {
+
+        if(activityRegistry.size === 0) loadingActivites();
+       
+  
+    }, [loadingActivites]);
+  
+  
+    // THIS IS LINE IS NOT WORKING
+  
+  
+  
+    if (activityStore.loadingInitial) {
+  
+      return <LoadingComponent content='Loading app' />
+    }
+  
+  
+
 
     return (
 
@@ -29,19 +49,19 @@ export default observer( function ActivityDashboard() {
 
 
             <Grid.Column width='6'>
-                {
+                {/* {
                    
                     //activities.map((activity: Activity) => (
 
                         activityStore.selectedActivity &&  // if activity & selectedActivity is exist or not null
                         <Segment  >
                             {
-                                activityStore.selectedActivity &&  !activityStore.editMode &&
+                                 selectedActivity &&  !editMode &&
                                 <ActivityDetails />
                             }
 
                             {
-                                activityStore.editMode &&
+                                 editMode &&
                                 <ActivityForm />
                             }
 
@@ -49,7 +69,8 @@ export default observer( function ActivityDashboard() {
 
                    // )
                    // )
-                }
+                } */}
+                <h1>Hello Wrold</h1>
 
             </Grid.Column>
 
