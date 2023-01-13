@@ -1,71 +1,43 @@
 import { observer } from "mobx-react-lite";
-import React, { HtmlHTMLAttributes, SyntheticEvent, useState, useContext } from "react";
-import { NavLink } from "react-router-dom";
-import { Button, Item, Label, Segment } from "semantic-ui-react";
+import { Fragment } from "react";
+import { Header, Item, Segment } from "semantic-ui-react";
 import { Activity } from "../../../app/models/activity";
 import { useStore } from "../../../app/stores/store";
+import ActivityListItem from "./ActivityListItem";
 
 
 
- 
+
 
 
 export default observer(function ActivityList() {
 
-    const [target, setTarget] = useState('');
-
     const { activityStore } = useStore();
 
     //const {deleteActivity,loading, activitiesByDate} = activityStore;
-    const {deleteActivity,loading, activitiesByDate} = activityStore;
-
-    function handleActivityDelete(e: SyntheticEvent<HTMLButtonElement>, id: string) {
-
-        setTarget(e.currentTarget.name);
-        deleteActivity(id);
-
-
-    }
+    const { groupedActivites } = activityStore;
 
 
     return (
 
+        <>
 
-        <Segment>
-            <Item.Group divided >
+            {groupedActivites.map(([group, activities]) => (
+                <Fragment key={group}>
+                    <Header sub color="teal"> {group}</Header>
 
-                {activitiesByDate.map((activity: Activity) => (
-                                            //{(Array.from(activityRegistry.values())).map((activity: Activity) => ( 
-                    <Item key={activity.id}>
-                        <Item.Content>
-                            <Item.Header>{activity.title}</Item.Header>
-                            <Item.Meta>{activity.date}</Item.Meta>
-                            <Item.Description>
-                                <div>{activity.description}</div>
-                                <div>{activity.city}, {activity.venue}</div>
-                            </Item.Description>
-                            <Item.Extra>
-                                <Button
-                                    name={activity.id}
-                                    loading={loading && target === activity.id}
-                                    floated="right"
-                                    content="Delete"
-                                    color="red"
-                                    onClick={(e) => handleActivityDelete(e, activity.id)} />
+                    {activities.map((activity: Activity) => (
+                        //{(Array.from(activityRegistry.values())).map((activity: Activity) => ( 
 
-                                
-                                    <Button
-                                    floated="right"
-                                    content="View" color="blue"
-                                    as= { NavLink } to={`/activities/${activity.id}`} /> 
+                        <ActivityListItem key={activity.id} activity={activity} />
 
-                                <Label basic content={activity.category} color='teal' />
-                            </Item.Extra>
-                        </Item.Content>
-                    </Item>
-                ))}
-            </Item.Group>
-        </Segment>
+                    ))}
+
+                </Fragment>
+            ))}
+        </>
+
+
     )
 
 

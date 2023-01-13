@@ -31,6 +31,21 @@ export class ActivityStore {
         })
     }
 
+    get groupedActivites () {
+// changning array in to object
+        return Object.entries( 
+            this.activitiesByDate.reduce( (activities, activity) => {
+
+                const date = activity.date;
+
+                activities[date] = activities[date] ? [...activities[date], activity]
+                                                    : [activity]
+                return activities;                                    
+
+            }, {} as {[key: string] : Activity[]}) 
+        )
+    }
+
     // 1   =========  activities   initialization
     loadingActivites = async () => {
 
@@ -101,10 +116,8 @@ export class ActivityStore {
     }
 
     createActivity = async (activity: Activity) => {
-
         this.loading = true;
         activity.id = uuid();
-
         try {
 
             await agent.Activities.create(activity);
@@ -117,13 +130,10 @@ export class ActivityStore {
             })
 
         } catch (error) {
-
             console.log(error);
             runInAction(() => {
-
                 this.loading = false;
             });
-
         }
     }
 

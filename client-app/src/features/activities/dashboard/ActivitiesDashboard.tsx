@@ -5,6 +5,7 @@ import { useStore } from "../../../app/stores/store";
 import ActivityList from "./ActivityList";
 
 import { observer } from 'mobx-react-lite';
+import ActivityFilters from "./ActivityFilters";
 
 
 
@@ -47,30 +48,9 @@ export default observer( function ActivityDashboard() {
                 <ActivityList />
             </Grid.Column>
 
-
             <Grid.Column width='6'>
-                {/* {
-                   
-                    //activities.map((activity: Activity) => (
-
-                        activityStore.selectedActivity &&  // if activity & selectedActivity is exist or not null
-                        <Segment  >
-                            {
-                                 selectedActivity &&  !editMode &&
-                                <ActivityDetails />
-                            }
-
-                            {
-                                 editMode &&
-                                <ActivityForm />
-                            }
-
-                        </Segment>
-
-                   // )
-                   // )
-                } */}
-                <h1>Hello Wrold</h1>
+             
+                <ActivityFilters />
 
             </Grid.Column>
 
