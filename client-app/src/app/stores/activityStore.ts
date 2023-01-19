@@ -18,7 +18,6 @@ export class ActivityStore {
 
     constructor() {
 
-
         makeAutoObservable(this)
     }
 
@@ -51,12 +50,23 @@ export class ActivityStore {
 
         this.setloadingInitial(true);
 
+        const activities = await agent.Activities.list();
+
         try {
-            const activities = await agent.Activities.list();
+            
+
+            console.log(activities)
 
             runInAction(() => {
-                activities.forEach((activity) => {
-                    this.setActivity(activity);
+
+            
+               
+              //activities.forEach((activity) => {
+                
+              Array.from(activities).forEach((activity) => {
+
+                
+                 this.setActivity(activity);
                 })
                 this.setloadingInitial(false);
             })

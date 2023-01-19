@@ -3,9 +3,11 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
 import { router } from './app/api/router/Routes';
- import 'react-calendar/dist/Calendar.css';
+import 'react-calendar/dist/Calendar.css';
+import 'react-toastify/dist/ReactToastify.min.css'
+
+
 import './app/layout/styles.css';
-//import { StoreContext, store } from './app/stores/store';
 import { StoreContext, store } from './app/stores/store';
 import reportWebVitals from './reportWebVitals';
 
@@ -17,11 +19,11 @@ root.render(
   // on the conole due to semantic ui doesn't work with stric mode.
   // <React.StrictMode>
 
-  
+
   <StoreContext.Provider value={store}>
-    <RouterProvider router={router} /> 
+    <RouterProvider router={router} />
   </StoreContext.Provider>
- 
+
 
 
   // </React.StrictMode>

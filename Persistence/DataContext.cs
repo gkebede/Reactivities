@@ -11,11 +11,4 @@ public class DataContext : DbContext
 
     public DbSet<Activity> Activities {get;set;}
 
-
-   
-    // private override void OnModelCreating(ModelBuilder modelBuilder){
-
-    // }
-
-    
 }
