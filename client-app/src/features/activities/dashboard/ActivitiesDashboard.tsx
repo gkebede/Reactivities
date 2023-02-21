@@ -6,6 +6,7 @@ import ActivityList from "./ActivityList";
 
 import { observer } from 'mobx-react-lite';
 import ActivityFilters from "./ActivityFilters";
+import ActivityForm from "../form/ActivityForm";
 
 
 
@@ -13,26 +14,20 @@ import ActivityFilters from "./ActivityFilters";
 
 export default observer( function ActivityDashboard() {
 
-
-  
-
     const {activityStore} = useStore();
-    const { loadingActivites, activityRegistry} = activityStore;
-    // useEffect  -> LOOP INDEFNATLY loop IF WE DON'T GIVE SOME KIND OF DEPENDENCY
-  
-    useEffect(() => {
+    const { loadActivities, activityRegistry} = activityStore;
 
-        if(activityRegistry.size === 0) loadingActivites();
-       
+
+    useEffect( () => {
+        loadActivities()
+      }, [loadActivities])
+    
+    
   
-    }, [loadingActivites]);
+    // THE following LINE IS NOT WORKING
   
   
-    // THIS IS LINE IS NOT WORKING
-  
-  
-  
-    if (activityStore.loadingInitial) {
+    if (activityStore.selectedActivity) {
   
       return <LoadingComponent content='Loading app' />
     }
@@ -45,7 +40,7 @@ export default observer( function ActivityDashboard() {
         
         <Grid>
             <Grid.Column width='10'>
-                <ActivityList />
+             <ActivityList  /> 
             </Grid.Column>
 
             <Grid.Column width='6'>

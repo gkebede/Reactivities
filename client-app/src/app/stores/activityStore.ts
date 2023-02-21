@@ -1,13 +1,19 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import React from "react";
+import { makeAutoObservable, runInAction, values } from "mobx";
 import agent from "../api/agent";
 import { Activity } from "../models/activity";
+import { Result } from "../models/result";
 import { v4 as uuid } from 'uuid';
+import { format } from "date-fns";
 
-export class ActivityStore {
+export class ActivityStore   {
 
-    // activities: Activity[] = [];  === get activitiesByDate()
+    activities: Activity[] = [];  //=== get activitiesByDate()
     activityRegistry = new Map<string, Activity>();
     selectedActivity: Activity | undefined = undefined;
+
+
+      
 
     //defending mecanisms 
     editMode = false;
@@ -16,26 +22,26 @@ export class ActivityStore {
 
 
 
-    constructor() {
 
-        makeAutoObservable(this)
+    constructor() {
+        makeAutoObservable(this);
     }
+
 
     get activitiesByDate() {
 
-        return Array.from(this.activityRegistry.values()).sort((a, b) => {
-
-            return Date.parse(a.date) - Date.parse(b.date)
-
-        })
+        return Array.from(this.activityRegistry.values())
+        .sort((a, b) => a.date!.getTime() - b.date!.getTime()
+        
+       )
     }
 
-    get groupedActivites () {
+    get groupedActivities () {
 // changning array in to object
         return Object.entries( 
             this.activitiesByDate.reduce( (activities, activity) => {
 
-                const date = activity.date;
+                const date = format(activity.date!, 'dd MMM yyyy');
 
                 activities[date] = activities[date] ? [...activities[date], activity]
                                                     : [activity]
@@ -45,44 +51,42 @@ export class ActivityStore {
         )
     }
 
+
     // 1   =========  activities   initialization
-    loadingActivites = async () => {
-
+    loadActivities = async () => {
         this.setloadingInitial(true);
-
-        const activities = await agent.Activities.list();
-
         try {
-            
+          const results  = await agent.Activities.list();
 
-            console.log(activities)
+         console.log(results);
 
-            runInAction(() => {
+         runInAction( () => {
 
-            
-               
-              //activities.forEach((activity) => {
-                
-              Array.from(activities).forEach((activity) => {
-
-                
-                 this.setActivity(activity);
-                })
-                this.setloadingInitial(false);
+            results.value.forEach(( result ) => {
+                this.setActivity(result);
+                this.setloadingInitial(true);
             })
-        } catch (error) {
+    
 
-            console.log(error)
             this.setloadingInitial(false);
-        }
-    }
 
+         })
+   
+        
+        } catch (error) {
+          console.log(error);
+           this.setloadingInitial(false);
+        }
+      };
+
+      
     loadActivity = async (id: string) => {
 
         let activity = this.getActivity(id);
 
         if (activity) {
             this.selectedActivity = activity;
+                return activity;
         }
         else {
             this.setloadingInitial(true);
@@ -91,9 +95,19 @@ export class ActivityStore {
                 activity = await agent.Activities.details(id);
             //    this.activityRegistry.set(activity.id, activity);
                 this.setActivity(activity);
+               
+      
 
+
+                runInAction( () => {
                 this.selectedActivity = activity;
+                                
+                })
+
+
+
                 this.setloadingInitial(false);
+                return activity;
 
             } catch (error) {
                 console.log(error);
@@ -104,11 +118,16 @@ export class ActivityStore {
 
 
     private setActivity = (activity: Activity) => {
-
-        activity.date = activity.date.split('T')[0]
-        //  this.activities.push(activity);
+            activity.date = new Date();
        
+        if(activity){
+        //  this.activities.push(activity);
+                
         this.activityRegistry.set(activity.id, activity);
+
+    }
+
+
     }
 
     private getActivity = (id: string) => {

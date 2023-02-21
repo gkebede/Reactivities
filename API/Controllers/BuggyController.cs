@@ -11,7 +11,7 @@ namespace API.Controllers
         }
 
         [HttpGet("bad-request")]
-        public ActionResult GetBadRequest()
+        public IActionResult GetBadRequest()
         {
             return BadRequest("This is a bad request");
         }
@@ -19,7 +19,8 @@ namespace API.Controllers
         [HttpGet("server-error")]
         public ActionResult GetServerError()
         {
-            throw new Exception("This is a server error");
+           throw new Exception();
+          
         }
 
         [HttpGet("unauthorised")]

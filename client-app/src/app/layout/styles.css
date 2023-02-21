@@ -15,6 +15,12 @@ body {
   width: 100%;
   border: none;
   box-shadow: 0 1px 2px 0 rgb(34 36 38 / 15%);
+ 
+}
+ 
+.react-datepicker-wrapper {
+  width: 100%;
+  background: green;
 }
 
 .masthead {

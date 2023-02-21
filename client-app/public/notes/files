@@ -1,7 +1,12 @@
 1--dotnet new list   ---to see all .net projects
 2--
 
+
+
 ENTITY FRAME WORK
+
+**to add migrations and specify the folder(project) that contains the data context which is Persistence and flag the API for our startUp Project as follow...
+---dotnet ef migrations add IdentityAdded -p Persistence -s API
 
 EF ===> Entity frame work comands
 
@@ -16,6 +21,16 @@ EF ===> Entity frame work comands
 
 connection issues solution for .net core 7 and up
 --https://stackoverflow.com/questions/17615260/the-certificate-chain-was-issued-by-an-authority-that-is-not-trusted-when-conn
+
+###THIRD PARTY LIBRARY
+---  npm install formik  (REACT FORM)
+---  npm install semantic-ui-react semantic-ui-css
+---  npm install react-router-dom
+---  npm install axios
+---  > npm install yup   && npm install yup @types/yup --save-dev (-Fomrik validation)
+---  npm install react-datepicker with type  ---npm install @types/react-datepicker            --save-dev(react calander)
+--- npm ls date-fns (to check what version of date form used by datePickr and then the install the follwing)
+---npm install date-fns@2.29.3  
 
 
 GIT

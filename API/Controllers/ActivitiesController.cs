@@ -3,19 +3,25 @@ using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Application.Activities;
 using Application;
-using Application.Activities.core;
+using Microsoft.AspNetCore.Authorization;
+using Persistence;
+
+
 
 namespace API.Controllers
 {
 
+ [AllowAnonymous]
     public class ActivitiesController : BaseApiController
     {
 
         private readonly ILogger<ActivitiesController> _logger;
+        private readonly DataContext _context;
 
-        public ActivitiesController(ILogger<ActivitiesController> logger)
+        public ActivitiesController(ILogger<ActivitiesController> logger, DataContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
 
@@ -23,15 +29,16 @@ namespace API.Controllers
 
         // http://localhost:5000/activities
         [HttpGet]
+       // public IActionResult GetActivities()
         public async Task<IActionResult> GetActivities()
         {
             return HandleResult(await Mediator.Send(new List.Query()));
-
-           // return Ok(await Mediator.Send(new List.Query()));
-
+            
+          // return Ok(_context.Activities.ToList());
         }
 
 
+       // [Authorize]
         [HttpGet("{id}")]
 
         public async Task<IActionResult> GetActivity(Guid id)

@@ -1,44 +1,39 @@
-import { observer } from "mobx-react-lite";
-import { Fragment } from "react";
+import { observer } from 'mobx-react-lite';
+import { Fragment, useEffect } from 'react';
 import { Header, Item, Segment } from "semantic-ui-react";
-import { Activity } from "../../../app/models/activity";
-import { useStore } from "../../../app/stores/store";
-import ActivityListItem from "./ActivityListItem";
-
-
-
-
-
+import { useStore } from '../../../app/stores/store';
+import ActivityListItem from './ActivityListItem';
 
 export default observer(function ActivityList() {
-
     const { activityStore } = useStore();
-
-    //const {deleteActivity,loading, activitiesByDate} = activityStore;
-    const { groupedActivites } = activityStore;
+    const { groupedActivities, loadActivities, activitiesByDate } = activityStore;
 
 
     return (
-
         <>
+            {groupedActivities.map(([group, activities]) => (
 
-            {groupedActivites.map(([group, activities]) => (
                 <Fragment key={group}>
-                    <Header sub color="teal"> {group}</Header>
+                    <Header sub color='teal'>
+                        {group}
+                    </Header>
+                
+                        {
+                            activities.map(activity => (
 
-                    {activities.map((activity: Activity) => (
-                        //{(Array.from(activityRegistry.values())).map((activity: Activity) => ( 
+                                <ActivityListItem key={activity.id} activity={activity} />
 
-                        <ActivityListItem key={activity.id} activity={activity} />
-
-                    ))}
+                            ))
+                            
+                            }
 
                 </Fragment>
+
             ))}
         </>
 
-
     )
-
-
 })
+
+
+// https://github.com/TryCatchLearn/Reactivities/blob/main/client-app/src/features/activities/dashboard/ActivityList.tsx

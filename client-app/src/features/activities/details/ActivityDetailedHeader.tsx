@@ -1,4 +1,7 @@
+import { format } from 'date-fns';
 import { observer } from 'mobx-react-lite';
+import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import {Button, Header, Item, Segment, Image} from 'semantic-ui-react'
 import {Activity} from "../../../app/models/activity";
 
@@ -20,10 +23,25 @@ interface Props {
 }
 
 export default observer (function ActivityDetailedHeader({activity}: Props) {
+
+  const [ids, setIds]  = useState(null);
+
+    const { id } = useParams();
+
+    useEffect( () => {
+
+        setIds(ids);
+
+    },[id])
+
     return (
         <Segment.Group>
             <Segment basic attached='top' style={{padding: '0'}}>
-                <Image src={`/assets/categoryImages/${activity.category}.jpg`} fluid style={activityImageStyle}/>
+                { 
+
+                <Image src={`/assets/categoryImages/${activity.category}.jpg`}
+                 fluid style={activityImageStyle}/>
+}
                 <Segment style={activityImageTextStyle} basic>
                     <Item.Group>
                         <Item>
@@ -33,7 +51,7 @@ export default observer (function ActivityDetailedHeader({activity}: Props) {
                                     content={activity.title}
                                     style={{color: 'white'}}
                                 />
-                                <p>{activity.date}</p>
+                                <p>{format(activity.date!, 'dd MMM yyyy h:mm aa ')}</p>
                                 <p>
                                     Hosted by <strong>Bob</strong>
                                 </p>
@@ -45,7 +63,7 @@ export default observer (function ActivityDetailedHeader({activity}: Props) {
             <Segment clearing attached='bottom'>
                 <Button color='teal'>Join Activity</Button>
                 <Button>Cancel attendance</Button>
-                <Button color='orange' floated='right'>
+                <Button as={ Link } to={`/manage/${activity.id}`} color='orange' floated='right'>
                     Manage Event
                 </Button>
             </Segment>

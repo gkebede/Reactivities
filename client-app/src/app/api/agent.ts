@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { Activity } from "../models/activity";
+import { Result } from "../models/result";
 import { store } from "../stores/store";
 import { router } from "./router/Routes";
 
@@ -62,7 +63,7 @@ axios.interceptors.response.use(async response => {
         store.commonStore.setServerError(data);
         router.navigate('/server-error');
         break;
-    }
+    }  
 
     return Promise.reject(error);
 })
@@ -79,9 +80,10 @@ const requests = {
 
 const Activities = {
 
-    list: () => requests.get<Activity[]>(`/activities`),
+    list: () => requests.get<Result>(`/activities`),
+    //list: () => requests.get<Activity[]>(`/activities`),
     details: (id: string) => requests.get<Activity>(`/activities/${id}`),
-    create: (activity: Activity) => requests.post<Activity>(`/activities/`, activity),
+    create: (activity: Activity) => requests.post<Result>(`/activities/`, activity),
     update: (activity: Activity) => requests.put<Activity>(`/activities/${activity.id}`, activity ),
     delete: (id: string) => requests.delete<Activity>(`/activities/${id}`),
     
