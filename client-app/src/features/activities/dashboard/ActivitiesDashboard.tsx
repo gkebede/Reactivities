@@ -14,13 +14,18 @@ import ActivityForm from "../form/ActivityForm";
 
 export default observer( function ActivityDashboard() {
 
-    const {activityStore} = useStore();
+    const {activityStore, userStore:{getUser, user}} = useStore();
     const { loadActivities, activityRegistry} = activityStore;
 
 
     useEffect( () => {
-        loadActivities()
-      }, [loadActivities])
+        if(!user){
+            return
+        }else{
+            loadActivities()
+        }
+        
+      }, [loadActivities,getUser])
     
     
   
@@ -29,7 +34,7 @@ export default observer( function ActivityDashboard() {
   
     if (activityStore.selectedActivity) {
   
-      return <LoadingComponent content='Loading app' />
+      return <LoadingComponent content='Loading activities...' />
     }
   
   
@@ -45,7 +50,7 @@ export default observer( function ActivityDashboard() {
 
             <Grid.Column width='6'>
              
-                <ActivityFilters />
+                { user &&<ActivityFilters />}
 
             </Grid.Column>
 

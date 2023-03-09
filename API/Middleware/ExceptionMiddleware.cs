@@ -10,8 +10,7 @@ namespace API.Middleware
         private readonly ILogger<ExceptionMiddleware> _logger;
         public readonly IHostEnvironment _env;
         public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger,
-
-        IHostEnvironment env)
+                                    IHostEnvironment env)
         {
             _env = env;
             _logger = logger;

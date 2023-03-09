@@ -8,6 +8,7 @@ interface Props {
     placeholder: string;
     name: string;
     label? : string;
+    type? : string;
 }
 
 export default  function MyTextInput (props: Props) {
@@ -16,7 +17,7 @@ export default  function MyTextInput (props: Props) {
 
     return(
          
-       // !!meta.touched === it a boolean
+       // !!meta.touched === it is a boolean
         
         <Form.Field  error={meta.error && !!meta.touched}>
 

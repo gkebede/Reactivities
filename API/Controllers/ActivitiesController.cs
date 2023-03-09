@@ -28,6 +28,7 @@ namespace API.Controllers
 
 
         // http://localhost:5000/activities
+        [Authorize]
         [HttpGet]
        // public IActionResult GetActivities()
         public async Task<IActionResult> GetActivities()

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [AllowAnonymous]
+   // [AllowAnonymous]
 
     [ApiController]
     [Route("api/[controller]")]
@@ -21,9 +21,8 @@ namespace API.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         public ILogger<AccountController> Logger { get; }
 
-        public AccountController(UserManager<AppUser> userManager, TokenService tokenService, SignInManager<AppUser> signInManager, ILogger<AccountController> logger)
+        public AccountController(UserManager<AppUser> userManager, TokenService tokenService, SignInManager<AppUser> signInManager)
         {
-            Logger = logger;
             _tokenService = tokenService;
             _signInManager = signInManager;
             _userManager = userManager;
@@ -36,7 +35,7 @@ namespace API.Controllers
         {
 
             //var user = await _userManager.FindByEmailAsync(loginDto.Email);
-            var user = await _signInManager.UserManager.FindByEmailAsync(loginDto.Email);
+            var user = await _userManager.FindByEmailAsync(loginDto.Email);
 
             // var user = await _userManager.Users.Include(p => p.Photos)
             //     .FirstOrDefaultAsync(x => x.Email == loginDto.Email);
@@ -44,14 +43,15 @@ namespace API.Controllers
             if (user == null) return Unauthorized();
 
             //var results = await _userManager.CheckPasswordAsync(user, loginDto.Password);
-            var result = await _signInManager.CanSignInAsync(user);
+            //var result = await _signInManager.CanSignInAsync(user);
+            var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password,false,false);
 
 
             // var result = await _signInManager.CanSignInAsync(user);
 
 
 
-            if (result)
+            if (result.Succeeded)
             {
                 return CreateUserObject(user);
             }
@@ -68,18 +68,19 @@ namespace API.Controllers
             if (ModelState.IsValid)
             {
 
-                var isUser = await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email)
-                 && await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username);
+                // var isUser = await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email)
+                //  && await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username);
 
-                if (isUser)
+                if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
                 {
-                    ModelState.AddModelError(registerDto.Email, "Email is already taken taken");
+                    ModelState.AddModelError("Email", "Email is already taken taken");
                     return ValidationProblem();
                 }
 
-                else if (isUser)
+                else if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
+
                 {
-                    ModelState.AddModelError(registerDto.Username, "Username is already taken taken");
+                    ModelState.AddModelError("Username", "Username is already taken taken");
                     return ValidationProblem();
                 }
 
@@ -96,7 +97,7 @@ namespace API.Controllers
 
                 if (result.Succeeded)
                 {
-                    await _signInManager.PasswordSignInAsync(user, registerDto.Password, false, false);
+                   // await _signInManager.PasswordSignInAsync(user, registerDto.Password, false, false);
                     return CreateUserObject(user);
                 }
 

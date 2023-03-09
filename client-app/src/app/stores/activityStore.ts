@@ -58,7 +58,7 @@ export class ActivityStore   {
         try {
           const results  = await agent.Activities.list();
 
-         console.log(results);
+         //console.log(results);
 
          runInAction( () => {
 
