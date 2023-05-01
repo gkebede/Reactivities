@@ -1,16 +1,25 @@
+@@@ MIGRATIONS
+============
+---To add migrations  
+   =>dotnet ef migrations add ActivityAttendee -p Persistence -s API
+       -p == project name -s == start up project 
+---to remove migrations  => dotnet ef migrations remove  
+
+
 1--dotnet new list   ---to see all .net projects
 2--
 
 
 
-ENTITY FRAME WORK
+@@@  ENTITY FRAME WORK
+=======================
 
 **to add migrations and specify the folder(project) that contains the data context which is Persistence and flag the API for our startUp Project as follow...
 ---dotnet ef migrations add IdentityAdded -p Persistence -s API
 
 EF ===> Entity frame work comands
 
---dotnet ef to get list of comands
+--dotnet ef  =>  to get list of comands
 
 --microsoft.entityframework.sqlserver
 --Microsoft.EntityFrameworkCore.Design
@@ -18,11 +27,36 @@ EF ===> Entity frame work comands
 
 --dotnet tool install --global dotnet-ef --version 7.0.0
 --dotnet ef migrartions add InitialCreate -s API -p Persistence
+===============================================
+
+
+   ...
+@@@ DOTNET CREATING  NEW PROJECT AND ...
+===================================================================================================
+      ***  to get the list(type ) of .net core projects  ===> dotnet new --list
+
+      dotnet new classlib -n Infrastructure  
+      dotnet sln add Infrastructure
+
+      ...dotnet new classlib -n Infrastructure   then ADD ANY NEW PROJECT TO THE solution as follow ---dotnet sln add Infrastructure
+      ... THEN ONCE WE ADD THE PROJECT TO THE sln   if that new project want to reference any project or referenceced by any other prokect it will do so as follow
+
+        C:\DBA\Reactivities\Infrastructure>dotnet add reference ../Application   ie. Infrastructure need to accesse to Application project
+        C:\DBA\Reactivities\API>dotnet add reference ../Infrastructure           ie. The API project need to accesse to Infrastructure project
+     
+And our API project is going to need access to our infrastructure projects, the classes and services are going to be needed to be added to our dependency injection container.
+So we need to reference from the API to the infrastructure.
+===================================================================================================
+
 
 connection issues solution for .net core 7 and up
 --https://stackoverflow.com/questions/17615260/the-certificate-chain-was-issued-by-an-authority-that-is-not-trusted-when-conn
 
-###THIRD PARTY LIBRARY
+==========================================================================
+
+
+@@@ THIRD PARTY LIBRARY
+========================
 ---  npm install formik  (REACT FORM)
 ---  npm install semantic-ui-react semantic-ui-css
 ---  npm install react-router-dom
@@ -31,9 +65,11 @@ connection issues solution for .net core 7 and up
 ---  npm install react-datepicker with type  ---npm install @types/react-datepicker            --save-dev(react calander)
 --- npm ls date-fns (to check what version of date form used by datePickr and then the install the follwing)
 ---npm install date-fns@2.29.3  
+========================================================================
 
 
-GIT
+@@@ GIT
+========
 
 --git init  - to create git to your project
 --dotnet new gitignore   -- to create ignore file in your project
@@ -41,3 +77,5 @@ GIT
 
 -- git accesse code 
 ---- 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
+=========================================================================
+

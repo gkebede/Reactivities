@@ -4,7 +4,7 @@ import { Activity } from "../models/activity";
 import { Result } from "../models/result";
 import { User, UserFormValues } from "../models/users";
 import { store } from "../stores/store";
-import { router } from "./router/Routes";
+import { router } from "../router/Routes";
 
  
 function sleep(delay: number) {

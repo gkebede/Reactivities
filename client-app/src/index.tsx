@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
-import { router } from './app/api/router/Routes';
+import { router } from './app/router/Routes';
 import 'react-calendar/dist/Calendar.css';
 import 'react-toastify/dist/ReactToastify.min.css'
 import 'react-datepicker/dist/react-datepicker.css'

@@ -12,14 +12,46 @@ public class DataContext : IdentityDbContext<AppUser>
     }
 
     public DbSet<Activity> Activities {get;set;}
+    public DbSet<ActivityAttendee> ActivityAttendees {get;set;}
+
 
     
     protected override void OnModelCreating(ModelBuilder builder)
-    {
-        base.OnModelCreating(builder.Entity<AppUser>( a => {
-            a.GetType();
+          {
+            base.OnModelCreating(builder);
 
-        }));
-    }
+            builder.Entity<ActivityAttendee>(x => x.HasKey(aa => new { aa.AppUserId, aa.ActivityId }));
+
+            //AppUser  have many  --Activities
+            builder.Entity<ActivityAttendee>()
+                .HasOne(u => u.AppUser)
+                .WithMany(u => u.Activities)
+                .HasForeignKey(aa => aa.AppUserId);
+
+                //Activity  have mnay --Attendees
+            builder.Entity<ActivityAttendee>()
+                .HasOne(u => u.Activity)
+                .WithMany(u => u.Attendees)
+                .HasForeignKey(aa => aa.ActivityId);
+
+            // builder.Entity<Comment>()
+            //     .HasOne(a => a.Activity)
+            //     .WithMany(c => c.Comments)
+            //     .OnDelete(DeleteBehavior.Cascade);
+
+            // builder.Entity<UserFollowing>(b =>
+            // {
+            //     b.HasKey(k => new { k.ObserverId, k.TargetId });
+
+            //     b.HasOne(o => o.Observer)
+            //         .WithMany(f => f.Followings)
+            //         .HasForeignKey(o => o.ObserverId)
+            //         .OnDelete(DeleteBehavior.Cascade);
+            //     b.HasOne(t => t.Target)
+            //         .WithMany(f => f.Followers)
+            //         .HasForeignKey(t => t.TargetId)
+            //         .OnDelete(DeleteBehavior.Cascade);
+            //});
+           }
 
 }

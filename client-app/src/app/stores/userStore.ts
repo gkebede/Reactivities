@@ -1,14 +1,13 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../api/agent";
-import { router } from "../api/router/Routes";
+import { router } from "../router/Routes";
 import { User, UserFormValues } from "../models/users";
-//import { router } from "../router/Routes";
 import { store } from "./store";
 
 export default class UserStore {
    
     user: User | null  = null; 
-  
+ 
 
 
 
@@ -18,18 +17,15 @@ export default class UserStore {
 
     get isLoggedIn() {
         return !!this.user;
-    }
+    } 
 
     login = async (creds: UserFormValues) => {
         try {
             const user = await agent.Account.login(creds);
-
             store.commonStore.setToken(user.token);
-
-            // use the runInAction() after await action
             runInAction(() => this.user = user);
             router.navigate('/activities');
-             store.modalStore.closeModal();
+            store.modalStore.closeModal();
         } catch (error) {
             throw error;
         }

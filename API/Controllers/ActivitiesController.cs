@@ -11,7 +11,6 @@ using Persistence;
 namespace API.Controllers
 {
 
- [AllowAnonymous]
     public class ActivitiesController : BaseApiController
     {
 
@@ -28,11 +27,15 @@ namespace API.Controllers
 
 
         // http://localhost:5000/activities
-        [Authorize]
+       // [Authorize]
+         [AllowAnonymous]
         [HttpGet]
        // public IActionResult GetActivities()
         public async Task<IActionResult> GetActivities()
         {
+        //   _logger.LogError("Ii is reading herer");
+
+            
             return HandleResult(await Mediator.Send(new List.Query()));
             
           // return Ok(_context.Activities.ToList());
@@ -40,6 +43,7 @@ namespace API.Controllers
 
 
        // [Authorize]
+         [AllowAnonymous]
         [HttpGet("{id}")]
 
         public async Task<IActionResult> GetActivity(Guid id)
@@ -63,6 +67,7 @@ namespace API.Controllers
 
         }
 
+        [Authorize("IsActivityHost")]
         [HttpPut("{id}")]
         public async Task<IActionResult> EditActivity(Guid id, Activity activity)
         {
@@ -71,7 +76,7 @@ namespace API.Controllers
             //_logger.LogError("error n creating activities");
 
 
-            activity.ID = id;
+            activity.Id = id;
 
 
 
@@ -79,12 +84,19 @@ namespace API.Controllers
 
         }
 
+        [Authorize("IsActivityHost")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteActivity(Guid id)
         {
 
             return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
 
+        }
+
+            [HttpPost("{id}/attend")]
+        public async Task<IActionResult> Attend(Guid id)
+        {
+            return HandleResult(await Mediator.Send(new UpdateAttendance.Command { Id = id }));
         }
 
     }

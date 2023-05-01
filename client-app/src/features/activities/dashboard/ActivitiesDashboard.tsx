@@ -19,11 +19,11 @@ export default observer( function ActivityDashboard() {
 
 
     useEffect( () => {
-        if(!user){
-            return
-        }else{
+        // if(!user){
+        //     return
+        // }else{
             loadActivities()
-        }
+       // }
         
       }, [loadActivities,getUser])
     

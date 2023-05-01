@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-   // [AllowAnonymous]
+   
 
     [ApiController]
     [Route("api/[controller]")]
@@ -42,16 +42,16 @@ namespace API.Controllers
 
             if (user == null) return Unauthorized();
 
-            //var results = await _userManager.CheckPasswordAsync(user, loginDto.Password);
+            var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
             //var result = await _signInManager.CanSignInAsync(user);
-            var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password,false,false);
+           // var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password,false,false);
 
 
             // var result = await _signInManager.CanSignInAsync(user);
 
 
 
-            if (result.Succeeded)
+            if (result)
             {
                 return CreateUserObject(user);
             }
@@ -68,19 +68,17 @@ namespace API.Controllers
             if (ModelState.IsValid)
             {
 
-                // var isUser = await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email)
-                //  && await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username);
 
                 if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
                 {
-                    ModelState.AddModelError("Email", "Email is already taken taken");
+                    ModelState.AddModelError("email", "Email is already taken taken");
                     return ValidationProblem();
                 }
 
                 else if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
 
                 {
-                    ModelState.AddModelError("Username", "Username is already taken taken");
+                    ModelState.AddModelError("username", "Username is already taken taken");
                     return ValidationProblem();
                 }
 

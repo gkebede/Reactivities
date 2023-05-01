@@ -80,6 +80,8 @@ export default observer(App);
 
 // https://github.com/TryCatchLearn/Reactivities
 
+// https://learn.microsoft.com/en-us/aspnet/core/security/authentication/customize-identity-model?view=aspnetcore-7.0
+
 
 // STEPS TO REMEMBER FOR DATA FLOW..
     // for C#

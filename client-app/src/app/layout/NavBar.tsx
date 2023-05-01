@@ -16,6 +16,7 @@ const {userStore:{ user, logout}} = useStore();
                 <Menu.Item header as= {NavLink} to='/'>
                     <img src="/assets/logo.png" alt="logo" style={{ paddingRight : 10 }} />
                     Reactivities
+                    
                 </Menu.Item>
 
 
